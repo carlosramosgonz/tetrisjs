@@ -3,6 +3,24 @@
 
     var BOARD_SIZE_X = 10;
     var BOARD_SIZE_Y = 20;
+	
+	/**
+	 * Returns a random integer from 0 to max.
+	 */
+	function RandomInt(max) {
+		return Math.floor(Math.random() * max);
+	}
+	
+	/**
+	 * Gets a new random piece.
+	 * @returns An array with the positions on the board (from (0,0)) of the piece.
+	 */
+	function GetRandomPiece() {
+		var pieceName = window.PiecesNames[RandomInt(window.PiecesNames.length)];
+		var variantNumber = 0;   // just one variant for now - when we add rotation there'll be more
+		
+		return window.Pieces[pieceName][variantNumber];
+	}
 
     /**
      * Represents the game board. All the game logic happens here.
@@ -20,12 +38,7 @@
         }
 
         this.currentPiece = {
-            blocks: [
-                [0, 0],
-                [0, 1],
-                [0, 2],
-                [1, 0]
-            ]
+            blocks: GetRandomPiece()
         };
     };
 
@@ -92,12 +105,7 @@
                 this.boardArray[block[0]][block[1]] = 'X';
             }.bind(this));
 			
-			this.currentPiece.blocks = [
-				[0, 0],
-				[0, 1],
-				[1, 0],
-				[1, 1]
-			];
+			this.currentPiece.blocks = GetRandomPiece();
         }
     };
 
