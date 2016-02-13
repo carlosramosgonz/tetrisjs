@@ -86,9 +86,18 @@
     Board.prototype.moveDown = function () {
         console.log('move down');
         if (this.move(0, 1)) {
-            this.currentBlock.blocks.forEach(function (block) {
-                this.boardArray[elem[0]][elem[1]] = 'X';
-            });
+			// there's a collision: put the current piece in the board and
+			// make a new one
+            this.currentPiece.blocks.forEach(function (block) {
+                this.boardArray[block[0]][block[1]] = 'X';
+            }.bind(this));
+			
+			this.currentPiece.blocks = [
+				[0, 0],
+				[0, 1],
+				[1, 0],
+				[1, 1]
+			];
         }
     };
 
