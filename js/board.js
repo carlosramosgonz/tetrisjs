@@ -43,7 +43,7 @@
             var block = this.currentPiece.blocks[i];
             block = [block[0] + dy, block[1] + dx];
 
-            if (block[0] < 0 || block[0] >= BOARD_SIZE_Y || block[1] >= BOARD_SIZE_X) {
+            if (block[0] < 0 || block[1] < 0 || block[0] >= BOARD_SIZE_Y || block[1] >= BOARD_SIZE_X) {
                 // it collides with the board limits
                 return true;
             } else if (this.boardArray[block[0]][block[1]] === 'X') {
@@ -115,7 +115,7 @@
         // draw the board and all the pieces (except the current one)
         this.boardArray.forEach(function (boardRow, i) {
             boardRow.forEach(function (block, j) {
-                var worldPos = LocalToWorld([j, i]);
+                var worldPos = LocalToWorld(j, i);
                 var currentMV = mat4.create();
                 mat4.translate(currentMV, modelView, worldPos);
 
