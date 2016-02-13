@@ -19,6 +19,8 @@
 		var pieceName = window.PiecesNames[RandomInt(window.PiecesNames.length)];
 		var variantNumber = 0;   // just one variant for now - when we add rotation there'll be more
 		
+		console.log('next piece: ' + pieceName);
+		
 		return window.Pieces[pieceName][variantNumber];
 	}
 
