@@ -5,7 +5,7 @@
     var BOARD_SIZE_Y = 20;
 	
 	/**
-	 * Returns a random integer from 0 to max.
+	 * Returns a random integer in the range [0, max).
 	 */
 	function RandomInt(max) {
 		return Math.floor(Math.random() * max);
