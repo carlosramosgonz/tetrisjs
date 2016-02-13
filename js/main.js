@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * Main application logic.
+     * Main application controller.
      * @constructor
      * @param {string} canvasId - Main canvas element ID.
      */
