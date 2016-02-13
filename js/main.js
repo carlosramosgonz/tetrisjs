@@ -15,6 +15,7 @@
 
         try {
             this.gl = this.canvas.getContext('experimental-webgl');
+            this.downInterval = 500;
         } catch (e) {
             alert(e.name + ': ' + e.message);
             throw e;
@@ -34,9 +35,12 @@
 
         // set the underlying data type for glMatrix
         glMatrix.setMatrixArrayType(Float32Array);
-        
+
         this.initWebGL();
         this.initShaders();
+        this.initObjects();
+        this.initEvents();
+
         // start the drawing
         window.setInterval(this.drawScene.bind(this), 15);
     };
@@ -70,6 +74,55 @@
     };
 
     /**
+     * Init game objects and logic.
+     */
+    App.prototype.initObjects = function () {
+        this.board = new Board(this.gl);
+
+        console.log('initObjects finished');
+    };
+
+    /**
+     * Init event handling, like keyboard handling and timers.
+     */
+    App.prototype.initEvents = function () {
+        document.addEventListener('keydown', (function (ev) {
+            var key = ev.key || ev.keyIdentifier;
+            if (key === "Unidentified") {
+                return;
+            }
+
+            var unhandled = false;
+            switch(key) {
+                case 'ArrowLeft':
+                case 'Left':
+                    console.log('key: left');
+                    this.board.moveLeft();
+                    break;
+
+                case 'ArrowRight':
+                case 'Right':
+                    console.log('key: right');
+                    this.board.moveRight();
+                    break;
+
+                default:
+                    unhandled = true;
+                    console.log('unhandled keydown: ' + key);
+            }
+
+            if (!unhandled) {
+                ev.preventDefault();
+            }
+        }).bind(this));
+
+        // timer
+        window.setInterval(function () {
+            this.board.moveDown();
+        }.bind(this), this.downInterval);
+    };
+
+    /**
      * Draws the scene.
      */
     App.prototype.drawScene = function () {
@@ -84,7 +137,7 @@
         this.modelViewMatrix = mat4.create();
         mat4.translate(this.modelViewMatrix, mat4.create(), vec3.fromValues(0, 0, -50));
 
-
+        this.board.draw(this.modelViewMatrix, this.shaderProgram);
     };
 
     /**
