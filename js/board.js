@@ -17,9 +17,10 @@
 	 */
 	function GetRandomPiece() {
 		var pieceName = window.PiecesNames[RandomInt(window.PiecesNames.length)];
-		var variantNumber = 0;   // just one variant for now - when we add rotation there'll be more
+        var numVariants = window.Pieces[pieceName].length;
+		var variantNumber = (numVariants > 1) ? RandomInt(numVariants) : 0;
 		
-		console.log('next piece: ' + pieceName);
+		console.log('next piece: ' + pieceName + ', variant: ' + variantNumber);
 		
 		return {
             blocks: window.Pieces[pieceName][variantNumber],
