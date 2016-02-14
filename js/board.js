@@ -21,7 +21,11 @@
 		
 		console.log('next piece: ' + pieceName);
 		
-		return window.Pieces[pieceName][variantNumber];
+		return {
+            blocks: window.Pieces[pieceName][variantNumber],
+            name: pieceName,
+            variant: variantNumber
+        };
 	}
 
     /**
@@ -39,9 +43,7 @@
             this.boardArray.push(row);
         }
 
-        this.currentPiece = {
-            blocks: GetRandomPiece()
-        };
+        this.currentPiece = GetRandomPiece();
     };
 
     /**
@@ -107,9 +109,44 @@
                 this.boardArray[block[0]][block[1]] = 'X';
             }.bind(this));
 			
-			this.currentPiece.blocks = GetRandomPiece();
+			this.currentPiece = GetRandomPiece();
         }
     };
+    
+    Board.prototype.rotate = function () {
+        console.log('rotate');
+        
+//        if (this.currentPiece.name === 'L' || this.currentPiece.name === 'I') {
+            var numVariants = window.Pieces[this.currentPiece.name].length;
+            if (numVariants === 1) {
+                return;
+            }
+            
+            var oldVariant = this.currentPiece.variant;
+            
+            this.currentPiece.variant = (this.currentPiece.variant + 1) % numVariants;
+            
+            // ugly hack to rotate a piece on-site
+            // first we get the original blocks (based on the origin)
+            // substract it to the current position, and then add it to the new blocks
+            var originalBlocks = window.Pieces[this.currentPiece.name][oldVariant];
+            var diffBlocks = this.currentPiece.blocks.map(function (elem, i) {
+                return [elem[0]-originalBlocks[i][0], elem[1]-originalBlocks[i][1]];
+            });
+            
+            this.currentPiece.blocks = window.Pieces[this.currentPiece.name][this.currentPiece.variant].map(function (elem, i) {
+                return [elem[0]+diffBlocks[i][0], elem[1]+diffBlocks[i][1]];
+            });
+//        }
+    };
+    
+    /**
+      * Helper function we'll use to convert local coordinates to
+      * global (screen) coordinates.
+     */
+    function LocalToWorld(x, y) {
+        return vec3.fromValues(x*2 - 10, -y*2 + 20, 0);
+    }
 
     /**
      * Draws the boards and all the pieces.
@@ -124,12 +161,6 @@
         if (!this.blackBlock) {
             this.blackBlock = new Block(this.gl, true);
         }
-
-        // helper function we'll use to convert local coordinates to
-        // global (screen) coordinates
-        var LocalToWorld = function (x, y) {
-            return vec3.fromValues(x*2 - 10, -y*2 + 20, 0);
-        };
 
         // draw the board and all the pieces (except the current one)
         this.boardArray.forEach(function (boardRow, i) {

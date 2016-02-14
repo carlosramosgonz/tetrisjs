@@ -105,6 +105,11 @@
                     console.log('key: right');
                     this.board.moveRight();
                     break;
+                    
+                case ' ':
+                    console.log('key: space');
+                    this.board.rotate();
+                    break;
 
                 default:
                     unhandled = true;
