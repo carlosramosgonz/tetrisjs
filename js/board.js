@@ -117,28 +117,27 @@
     Board.prototype.rotate = function () {
         console.log('rotate');
         
-//        if (this.currentPiece.name === 'L' || this.currentPiece.name === 'I') {
-            var numVariants = window.Pieces[this.currentPiece.name].length;
-            if (numVariants === 1) {
-                return;
-            }
-            
-            var oldVariant = this.currentPiece.variant;
-            
-            this.currentPiece.variant = (this.currentPiece.variant + 1) % numVariants;
-            
-            // ugly hack to rotate a piece on-site
-            // first we get the original blocks (based on the origin)
-            // substract it to the current position, and then add it to the new blocks
-            var originalBlocks = window.Pieces[this.currentPiece.name][oldVariant];
-            var diffBlocks = this.currentPiece.blocks.map(function (elem, i) {
-                return [elem[0]-originalBlocks[i][0], elem[1]-originalBlocks[i][1]];
-            });
-            
-            this.currentPiece.blocks = window.Pieces[this.currentPiece.name][this.currentPiece.variant].map(function (elem, i) {
-                return [elem[0]+diffBlocks[i][0], elem[1]+diffBlocks[i][1]];
-            });
-//        }
+        var numVariants = window.Pieces[this.currentPiece.name].length;
+        if (numVariants === 1) {
+			// doesn't make sense to rotate a one-position piece
+            return;
+        }
+        
+        var oldVariant = this.currentPiece.variant;
+        
+        this.currentPiece.variant = (this.currentPiece.variant + 1) % numVariants;
+        
+        // ugly hack to rotate a piece on-site
+        // first we get the original blocks (based on the origin)
+        // substract it to the current position, and then add it to the new blocks
+        var originalBlocks = window.Pieces[this.currentPiece.name][oldVariant];
+        var diffBlocks = this.currentPiece.blocks.map(function (elem, i) {
+            return [elem[0]-originalBlocks[i][0], elem[1]-originalBlocks[i][1]];
+        });
+        
+        this.currentPiece.blocks = window.Pieces[this.currentPiece.name][this.currentPiece.variant].map(function (elem, i) {
+            return [elem[0]+diffBlocks[i][0], elem[1]+diffBlocks[i][1]];
+        });
     };
     
     /**
@@ -164,6 +163,7 @@
         }
 
         // draw the board and all the pieces (except the current one)
+        var that = this;
         this.boardArray.forEach(function (boardRow, i) {
             boardRow.forEach(function (block, j) {
                 var worldPos = LocalToWorld(j, i);
@@ -172,12 +172,12 @@
 
                 shaderProgram.setUniformMat4('uMVMatrix', currentMV);
                 if (block === 'X') {
-                    this.block.draw(shaderProgram);
+                    that.block.draw(shaderProgram);
                 } else {
-                    this.blackBlock.draw(shaderProgram);
+                    that.blackBlock.draw(shaderProgram);
                 }
-            }.bind(this));
-        }.bind(this));
+            });
+        });
 
         // draw the current piece
         if (this.currentPiece.blocks) {
@@ -187,8 +187,8 @@
                 mat4.translate(mv, modelView, worldPos);
 
                 shaderProgram.setUniformMat4('uMVMatrix', mv);
-                this.block.draw(shaderProgram);
-            }.bind(this));
+                that.block.draw(shaderProgram);
+            });
         }
     };
 
