@@ -105,8 +105,9 @@
                     console.log('key: right');
                     this.board.moveRight();
                     break;
-                    
+
                 case ' ':
+                case 'U+0020':
                     console.log('key: space');
                     this.board.rotate();
                     break;
