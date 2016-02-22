@@ -3,14 +3,14 @@
 
     var BOARD_SIZE_X = 10;
     var BOARD_SIZE_Y = 20;
-	
+
 	/**
 	 * Returns a random integer in the range [0, max).
 	 */
 	function RandomInt(max) {
 		return Math.floor(Math.random() * max);
 	}
-	
+
 	/**
 	 * Gets a new random piece.
 	 * @returns An array with the positions on the board (from (0,0)) of the piece.
@@ -19,9 +19,9 @@
 		var pieceName = window.PiecesNames[RandomInt(window.PiecesNames.length)];
         var numVariants = window.Pieces[pieceName].length;
 		var variantNumber = (numVariants > 1) ? RandomInt(numVariants) : 0;
-		
+
 		console.log('next piece: ' + pieceName + ', variant: ' + variantNumber);
-		
+
 		return {
             blocks: window.Pieces[pieceName][variantNumber],
             name: pieceName,
@@ -109,37 +109,54 @@
             this.currentPiece.blocks.forEach(function (block) {
                 this.boardArray[block[0]][block[1]] = 'X';
             }.bind(this));
-			
+
 			this.currentPiece = GetRandomPiece();
         }
     };
-    
+
     Board.prototype.rotate = function () {
         console.log('rotate');
-        
+
         var numVariants = window.Pieces[this.currentPiece.name].length;
         if (numVariants === 1) {
 			// doesn't make sense to rotate a one-position piece
             return;
         }
-        
-        var oldVariant = this.currentPiece.variant;
-        
-        this.currentPiece.variant = (this.currentPiece.variant + 1) % numVariants;
-        
+
+        // next variant
+        var newVariant = (this.currentPiece.variant + 1) % numVariants;
+
         // ugly hack to rotate a piece on-site
         // first we get the original blocks (based on the origin)
         // substract it to the current position, and then add it to the new blocks
-        var originalBlocks = window.Pieces[this.currentPiece.name][oldVariant];
+        var originalBlocks = window.Pieces[this.currentPiece.name][this.currentPiece.variant];
+        var newBlocks = window.Pieces[this.currentPiece.name][newVariant];
+
         var diffBlocks = this.currentPiece.blocks.map(function (elem, i) {
-            return [elem[0]-originalBlocks[i][0], elem[1]-originalBlocks[i][1]];
+			var x = elem[0]-originalBlocks[i][0];
+			var y = elem[1]-originalBlocks[i][1];
+
+            return [x, y];
         });
-        
+
+        // check if any new block would be out of bounds
+        for (var i = 0; i < diffBlocks.length; i++) {
+          if (newBlocks[i][1] + diffBlocks[i][1] >= BOARD_SIZE_X) {
+            return;
+          }
+        }
+
+        this.currentPiece.variant = newVariant;
+
         this.currentPiece.blocks = window.Pieces[this.currentPiece.name][this.currentPiece.variant].map(function (elem, i) {
-            return [elem[0]+diffBlocks[i][0], elem[1]+diffBlocks[i][1]];
+			var x = elem[0] + diffBlocks[i][0];
+			var y = elem[1] + diffBlocks[i][1];
+
+            return [x, y];
         });
+
     };
-    
+
     /**
       * Helper function we'll use to convert local coordinates to
       * global (screen) coordinates.
